@@ -1,3 +1,6 @@
+:root{
+    --primary-color: #f1f4f8;
+  }
 @font-face {
     font-family: 'HollowFont';
     src: url('fonts/HollowFont.ttf') format('truetype');
@@ -48,7 +51,6 @@ body{
 }
 #background-img{
     position: absolute;
-    z-index: 0;
     z-index: -1;
     top: 0;
     left: 0;
@@ -81,7 +83,6 @@ body{
     display: grid;
     grid-template-rows: 1fr 1fr 0.5fr;
     overflow: hidden;
-    transition: opacity 0.6s ease;
 } 
 #overlay-title {
     text-align: center;
@@ -152,18 +153,82 @@ margin-bottom: 2.5vh;
    
 }
 .difficulty-btns{
-    height: clamp(100px, 11vw, 12vw);
-    width: clamp(100px, 9vw, 11vw);
+    height: clamp(120px, 14vw, 14vw);
+    width: clamp(120px, 14vw, 14vw);
     background: none;
-    /* border: none; */
+    border: none;
     cursor: pointer;
+    position: relative;
+
+}
+.choices-pngs{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    
+}
+
+#easy-png{
+    left: 15%;
+    top: 18%;
+    width: 70%;
+    height: 70%;
+}
+.choices-pngs:hover{
+    animation: wiggle 0.5s ease-in-out forwards;
+}
+#difficulty-settings{
+    position: absolute;
+    bottom: 10%;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    font-size: clamp(12px, 1vw, 1vw);
 
 }
 
+/* game screen */
 
+#game-screen{
+    position: absolute;
+    display: grid;
+    grid-template: 1fr 1fr 1fr / 1fr 1fr 1fr;
+    top: 2%;
+    right: 2%;
+    height: 96%;
+    width: 96%;
 
+}
+.square{
+    height: 1fr;
+    width: 1fr;
+}
+#square-1, #square-2, #square-3, #square-4, #square-5, #square-6{
+    border-bottom:3px solid var(--primary-color);
+}
+#square-1, #square-4, #square-7, #square-2, #square-5, #square-8{
+    border-right: 3px solid var(--primary-color);
+}
 
+/* end screens */
 
+.end-screens{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: clamp(20px, 2vw, 2vw);
+}
+.end-img{
+    width: clamp(150px, 15vw, 16vw);
+    height: clamp(150px, 15vw, 16vw);
+}
 
 
 
@@ -172,6 +237,9 @@ margin-bottom: 2.5vh;
         width: 100vw;
         height: 100vw;
     }
+    #difficulty-settings{
+        bottom: 25%;
+     }
   }
 @media (min-height: 2500px) {
     #full-container{
@@ -188,5 +256,20 @@ margin-bottom: 2.5vh;
     .mute-png{
         width: 11vw;
         height: 11vw;
+    }
+    .difficulty-btns{
+        height: 400px;
+        width: 400px;
+    }
+    #difficulty-settings{
+       bottom: 20%;
+       font-size: 30px;
+    }
+    .end-screens{
+        font-size: 60px;
+    }
+    .end-img{
+        width: 600px;
+        height: 600px;
     }
   }
