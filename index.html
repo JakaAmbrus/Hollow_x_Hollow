@@ -6,15 +6,18 @@
     <title>TicTacToe Knight</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css">
+    <script src="script.js" defer></script>
 </head>
 <body>
     <div id="full-container">
+        <!-- mute button and background -->
+
         <button id="mute-button" class="buttons"><img class="mute-png" src="img/unmuted.png" alt="mute"></button>
         <img src="img/Menu_Theme_Void.webp" alt="background img" id="background-img">
 
         <!-- start-screen -->
 
-        <!-- <div id="overlay">
+        <div id="overlay">
             <h1 id="overlay-title">Hollow X Hollow</h1>
             <div class="start-btn-container">
                     <button class="start-btn"><img src="img/start.png" alt="start-img" id="start-img"></button>  
@@ -26,11 +29,12 @@
                 <i class="devicon-javascript-plain"></i>
             </div>
             </div>
-        </div> -->
+        </div>
 
         <!-- game content -->
 
-        <!-- <div id="choose-difficulty-screen">
+        <div id="choose-difficulty-screen">
+            <button id="pvp">Player vs Player</button>
             <p id="choose-text">Choose your prey</p>
             <div id="difficulty-btns-container">
                 <button id="easy-btn" class="difficulty-btns"><img src="img/easy.png" alt="easy png" class="choices-pngs" id="easy-png"></button>
@@ -44,9 +48,9 @@
                     <p>impossible</p>
                 </div>
             </div>
-        </div> -->
+        </div>
 
-        <!-- <div id="game-screen">
+        <div id="game-screen">
             <div id="square-1" class="square"></div>
             <div id="square-2" class="square"></div>
             <div id="square-3" class="square"></div>
@@ -56,25 +60,33 @@
             <div id="square-7" class="square"></div>
             <div id="square-8" class="square"></div>
             <div id="square-9" class="square"></div>
-         </div> -->
+         </div>
        
 
          <!-- win, lose and draw screens -->
 
-         <!-- <div id="win-screen" class="end-screens">
+         <div id="win-screen" class="end-screens">
             <p>YOU HAVE SLAIN YOUR FOE</p>
             <img src="img/win.png" alt="win img" class="end-img">
          </div>
          <div id="lose-screen" class="end-screens">
             <p>YOU HAVE BEEN BESTED</p>
             <img src="img/lose.png" alt="lose img" class="end-img">
-         </div> -->
+         </div>
          <div id="draw-screen" class="end-screens">
             <p>BOTH ARE EQUALLY MATCHED</p>
             <img src="img/draw.png" alt="draw img" class="end-img">
          </div>
 
-
+         <!-- audio -->
+         <div id="audio-container">
+            <audio class="game-audio" src="sound/transition.mp3" id="transition"></audio>
+            <audio class="game-audio" src="sound/danger.mp3" id="danger"></audio>
+            <audio class="game-audio" src="sound/warmup.mp3" id="warm-up"></audio>
+            <audio class="game-audio" src="sound/standard.mp3" id="standard"></audio>
+            <audio class="game-audio" src="sound/bones.mp3" id="bones"></audio>
+            <audio class="game-audio" src="sound/pvp.mp3" id="pvp-audio"></audio>
+        </div>
     </div>
 </body>
 </html>
