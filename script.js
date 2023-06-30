@@ -7,6 +7,10 @@ const chooseDifficultyScreen = document.getElementById("choose-difficulty-screen
 const easyBtn = document.getElementById("easy-btn");
 const midBtn = document.getElementById("mid-btn");
 const impossibleBtn = document.getElementById("impossible-btn");
+//choose turn screen
+const chooseTurnScreen = document.getElementById("choose-turn-screen");
+const xSelect = document.getElementById("x-select");
+const oSelect = document.getElementById("o-select");
 //game screen
 const gameScreen = document.getElementById("game-screen");
 const pvpBtn = document.getElementById("pvp");
@@ -56,26 +60,44 @@ startBtn.addEventListener('click', function() {
   transitionAudio.play()
 });
 easyBtn.addEventListener('click', function() {
-  transitionScreen(chooseDifficultyScreen, gameScreen);
-  transitionAudio.play();
-  muteButton.style.display = 'none';
-  turnPlayer = player;
-});
-midBtn.addEventListener('click', function() {
-  transitionScreen(chooseDifficultyScreen, gameScreen);
-  transitionAudio.play();
-  muteButton.style.display = 'none';
-});
-impossibleBtn.addEventListener('click', function() {
-  transitionScreen(chooseDifficultyScreen, gameScreen);
-  transitionAudio.play();
-  muteButton.style.display = 'none';
-  turnPlayer = computer;
-});
-pvpBtn.addEventListener('click', function() {
-  transitionScreen(chooseDifficultyScreen, gameScreen);
+  transitionScreen(chooseDifficultyScreen, chooseTurnScreen);
   pvpAudio.play();
   muteButton.style.display = 'none';
+  mode = 'easy';
+});
+midBtn.addEventListener('click', function() {
+  transitionScreen(chooseDifficultyScreen, chooseTurnScreen);
+  pvpAudio.play();
+  muteButton.style.display = 'none';
+  mode = 'mid';
+});
+impossibleBtn.addEventListener('click', function() {
+  transitionScreen(chooseDifficultyScreen, chooseTurnScreen);
+  pvpAudio.play();
+  muteButton.style.display = 'none';
+  mode = 'impossible';
+});
+pvpBtn.addEventListener('click', function() {
+  transitionScreen(chooseDifficultyScreen, chooseTurnScreen);
+  pvpAudio.play();
+  muteButton.style.display = 'none';
+  mode = 'pvp';
+});
+//turn selection
+xSelect.addEventListener('click', () => {
+  turnPlayer = player;
+  transitionScreen(chooseTurnScreen, gameScreen);
+  transitionAudio.play();
+});
+oSelect.addEventListener('click', () => {
+  turnPlayer = computer;
+  transitionScreen(chooseTurnScreen, gameScreen);
+  transitionAudio.play();
+  if(mode == 'easy'){
+    setTimeout(() => {
+      computerMove();
+    }, 200);
+  }
 });
 
 //difficulty hover sounds
@@ -106,7 +128,7 @@ muteButton.addEventListener('click', function() {
 });
 
 //game logic
-
+let mode;
 let turnPlayer;
 const player = 'X';
 const computer = 'O';
@@ -115,25 +137,38 @@ let gameField = ['', '', '', '', '', '', '', '', ''];
 squares.forEach((square, i) => {
   square.addEventListener('click', () => {
     if (gameField[i] === '') {
+      if(mode == 'pvp'){
       gameField[i] = turnPlayer;
       square.textContent = turnPlayer;
       turnPlayer = turnPlayer === 'X' ? 'O' : 'X';
+      }
+      else{
+        makeMove(i)
+      }
       checkOutcome()
     }
   });
 });
-//function that checks the outcome of the match
-function checkOutcome() {
+
+
+function checkOutcome() {  //function that checks the outcome of the match
   const winningCombinations = [
-    [0, 1, 2], [3, 4, 5], [6, 7, 8],
-    [0, 3, 6], [1, 4, 7], [2, 5, 8], 
-    [0, 4, 8], [2, 4, 6]              
+    //horizontally
+    [0, 1, 2], 
+    [3, 4, 5], 
+    [6, 7, 8],
+    //vertically
+    [0, 3, 6], 
+    [1, 4, 7], 
+    [2, 5, 8], 
+    //diagonally
+    [0, 4, 8], 
+    [2, 4, 6]              
   ];
 
-  // Check for a win/lose
-  for (const combination of winningCombinations) {
+  for (const combination of winningCombinations) { // Checks for a win/lose
     const [a, b, c] = combination;
-    if (gameField[a] !== '' && gameField[a] === gameField[b] && gameField[a] === gameField[c]) {
+    if (gameField[a] !== '' && gameField[a] === gameField[b] && gameField[b] === gameField[c]) {
       if (gameField[a] === 'X') {
         endScreenTransitions(winScreen, winAudio);
       } else {
@@ -143,15 +178,15 @@ function checkOutcome() {
     }
   }
 
-  // Check for a draw
-  const fullBoard = gameField.every(square => square !== '');
+  const fullBoard = gameField.every(square => square !== ''); // Checks for a draw
   if (fullBoard) {
     endScreenTransitions(drawScreen, drawAudio);
     return true;
   }
-
   return false;
 }
+
+
 //transitions of the outcome
 function endScreenTransitions(outcome, audio){
   gameScreen.style.pointerEvents = 'none';
@@ -176,12 +211,11 @@ function clearBoard(){
 
 
 
-
-function makeMove(index) {
-  gameField[index] = turnPlayer;
-  squares[index].textContent = turnPlayer;
+//computer logic
+function makeMove(i) {
+  gameField[i] = turnPlayer;
+  squares[i].textContent = turnPlayer;
   turnPlayer = turnPlayer === player ? computer : player;
-  checkOutcome();
 
   if (turnPlayer === computer) {
     gameScreen.style.pointerEvents = 'none';
@@ -189,6 +223,7 @@ function makeMove(index) {
       computerMove();
     }, 500);
   }
+
 }
 
 function computerMove() {
@@ -199,8 +234,8 @@ function computerMove() {
     return acc;
   }, []);
 
-  const randomIndex = Math.floor(Math.random() * emptyFields.length);
-  const selectedField = emptyFields[randomIndex];
+  const selectedIndex = Math.floor(Math.random() * emptyFields.length);
+  const selectedField = emptyFields[selectedIndex];
 
   gameField[selectedField] = turnPlayer;
   squares[selectedField].textContent = turnPlayer;

@@ -73,6 +73,8 @@ body{
     height: clamp(40px, 5vw, 3vw);
     width: clamp(40px, 5vw, 3vw);
   }
+
+
 /* title screen */
 
 #overlay {
@@ -147,7 +149,6 @@ margin-bottom: 2.5vh;
     position: absolute;
     bottom: 1.2em;
     left: 1.2em;
-    border: none;
     border: 0.2em solid var(--primary-color);
     border-radius: 3em;
     padding: 0.3em;
@@ -206,6 +207,25 @@ margin-bottom: 2.5vh;
 
 }
 
+
+/* choose turn screen */
+
+
+/* #choose-turn-screen{
+    z-index: 1000;
+    display: flex;
+} */
+#turn-selections{
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+    font-size: 6em;
+}
+#x-select, #o-select{
+    cursor: pointer;
+}
+
+
 /* game screen */
 
 #game-screen{
@@ -234,6 +254,7 @@ margin-bottom: 2.5vh;
     border-right: 3px solid var(--primary-color);
 }
 
+
 /* end screens */
 
 .end-screens{
@@ -252,9 +273,8 @@ margin-bottom: 2.5vh;
 }
 
 
-
-
 /* audio */
+
 #audio-container{
     display: none;
 }
