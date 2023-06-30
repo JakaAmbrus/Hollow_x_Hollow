@@ -26,6 +26,7 @@
 *{
     box-sizing: border-box;
     /* border: 2px solid blue; */
+    
 }
 body{
     margin: 0;
@@ -146,8 +147,9 @@ margin-bottom: 2.5vh;
     position: absolute;
     bottom: 1.2em;
     left: 1.2em;
+    border: none;
     border: 0.2em solid var(--primary-color);
-    border-radius: 2em;
+    border-radius: 3em;
     padding: 0.3em;
     font-size: clamp( 10px, 1vw,1vw);
     cursor: pointer;
