@@ -53,6 +53,9 @@ function transitionScreen(current, next)
   current.style.display = 'none';
   next.style.display = 'flex';
   }
+  if (next == chooseDifficultyScreen) {
+    clearBoard();
+  }
 }
 
 startBtn.addEventListener('click', function() {
@@ -96,7 +99,7 @@ oSelect.addEventListener('click', () => {
   if(mode == 'easy'){
     setTimeout(() => {
       computerMove();
-    }, 200);
+    }, 300);
   }
 });
 
@@ -221,6 +224,7 @@ function makeMove(i) {
     gameScreen.style.pointerEvents = 'none';
     setTimeout(() => {
       computerMove();
+      gameScreen.style.pointerEvents = 'all';
     }, 500);
   }
 
@@ -234,7 +238,11 @@ function computerMove() {
     return acc;
   }, []);
 
-  const selectedIndex = Math.floor(Math.random() * emptyFields.length);
+  let selectedIndex;
+  if (mode == 'easy'){
+    selectedIndex = Math.floor(Math.random() * emptyFields.length);
+  }
+
   const selectedField = emptyFields[selectedIndex];
 
   gameField[selectedField] = turnPlayer;
@@ -242,5 +250,4 @@ function computerMove() {
   turnPlayer = turnPlayer === player ? computer : player;
   checkOutcome();
 
-  gameScreen.style.pointerEvents = 'all';
 }
