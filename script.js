@@ -104,6 +104,11 @@ oSelect.addEventListener('click', () => {
       computerMove();
     }, 300);
   }
+  else if(mode == 'mid'){
+    setTimeout(() => {
+      makeComputerMoveMid(squares);
+    }, 300);
+  }
 });
 
 //difficulty hover sounds
@@ -156,56 +161,62 @@ squares.forEach((square, i) => {
 });
 
 
-function checkOutcome() {  //function that checks the outcome of the match
+function checkOutcome() {
   const winningCombinations = [
-    //horizontally
+    // horizontally
     [0, 1, 2], 
     [3, 4, 5], 
     [6, 7, 8],
-    //vertically
+    // vertically
     [0, 3, 6], 
     [1, 4, 7], 
     [2, 5, 8], 
-    //diagonally
+    // diagonally
     [0, 4, 8], 
     [2, 4, 6]              
   ];
 
-  for (const combination of winningCombinations) { // Checks for a win/lose
+  for (const combination of winningCombinations) {
     const [a, b, c] = combination;
     if (gameField[a] !== '' && gameField[a] === gameField[b] && gameField[b] === gameField[c]) {
       if (gameField[a] === 'X') {
-          mode == 'pvp' ? endScreenTransitions(xWinScreen, winAudio) : endScreenTransitions(winScreen, winAudio);
+        mode === 'pvp' ? endScreenTransitions(xWinScreen, winAudio) : endScreenTransitions(winScreen, winAudio);
       } else {
-          mode == 'pvp' ? endScreenTransitions(oWinScreen, winAudio) : endScreenTransitions(loseScreen, loseAudio);
+        mode === 'pvp' ? endScreenTransitions(oWinScreen, winAudio) : endScreenTransitions(loseScreen, loseAudio);
       }
       return true;
     }
   }
 
-  const fullBoard = gameField.every(square => square !== ''); // Checks for a draw
+  const fullBoard = gameField.every(square => square !== '');
   if (fullBoard) {
     endScreenTransitions(drawScreen, drawAudio);
     return true;
   }
+
   return false;
 }
+
 
 
 //computer logic
 function makeMove(i) {
   gameField[i] = turnPlayer;
   squares[i].textContent = turnPlayer;
+  squares[i].removeEventListener('click', makeMove); // Remove event listener from the selected square
   turnPlayer = turnPlayer === player ? computer : player;
 
   if (turnPlayer === computer) {
     gameScreen.style.pointerEvents = 'none';
     setTimeout(() => {
-      computerMove();
+      if (mode === 'easy') {
+        computerMove();
+      } else if (mode === 'mid') {
+        makeComputerMoveMid(squares);
+      }
       gameScreen.style.pointerEvents = 'all';
     }, 500);
   }
-
 }
 
 function computerMove() {
@@ -217,9 +228,9 @@ function computerMove() {
   }, []);
 
   let selectedIndex;
-  if (mode == 'easy'){
-    selectedIndex = Math.floor(Math.random() * emptyFields.length);
-  }
+  
+  selectedIndex = Math.floor(Math.random() * emptyFields.length);
+  
 
   const selectedField = emptyFields[selectedIndex];
 
@@ -229,7 +240,7 @@ function computerMove() {
   checkOutcome();
 
 }
-//standard mode algoithm
+
 
 //transitions of the outcome
 function endScreenTransitions(outcome, audio){
@@ -248,12 +259,60 @@ function endScreenTransitions(outcome, audio){
   }, 300);
  
 }
-function clearBoard(){
+function clearBoard() {
   squares.forEach((square, i) => {
     square.textContent = '';
     gameField[i] = '';
+    turnPlayer = undefined;
   });
+  mode = undefined; // Add this line to reset the `mode` variable
 }
+
+
+//mid difficulty logic
+function makeComputerMoveMid(squares) {
+  const emptyFields = gameField.reduce((acc, value, index) => {
+    if (value === "") {
+      acc.push(index);
+    }
+    return acc;
+  }, []);
+
+  let selectedIndex;
+
+  // Check for a winning move
+  for (const field of emptyFields) {
+    gameField[field] = turnPlayer;
+    if (checkOutcome()) {
+      selectedIndex = field;
+      break;
+    }
+    gameField[field] = "";
+  }
+
+  if (selectedIndex === undefined) {
+  if (emptyFields.length >= 0) {
+    selectedIndex = Math.floor(Math.random() * emptyFields.length);
+  } else {
+    checkOutcome();
+    return; 
+  }
+}
+  const selectedField = emptyFields[selectedIndex];
+  console.log(selectedField)
+  if (selectedField !== undefined){
+    gameField[selectedField] = turnPlayer;
+    squares[selectedField].textContent = turnPlayer;
+    turnPlayer = turnPlayer === player ? computer : player;
+    
+  }
+  checkOutcome();
+}
+
+
+
+
+
 
 
 
