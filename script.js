@@ -44,6 +44,7 @@ const loseAudio = document.getElementById("lose-audio");
 const drawAudio = document.getElementById("draw-audio");
 
 let mode; //to switch between difficulties
+
 //screen transition
 function transitionScreen(current, next)
 {
@@ -203,9 +204,9 @@ function checkOutcome() {
 function makeMove(i) {
   gameField[i] = turnPlayer;
   squares[i].textContent = turnPlayer;
-  squares[i].removeEventListener('click', makeMove); // Remove event listener from the selected square
+  squares[i].removeEventListener('click', makeMove); 
   turnPlayer = turnPlayer === player ? computer : player;
-
+  console.log(gameField)
   if (turnPlayer === computer) {
     gameScreen.style.pointerEvents = 'none';
     setTimeout(() => {
@@ -265,7 +266,7 @@ function clearBoard() {
     gameField[i] = '';
     turnPlayer = undefined;
   });
-  mode = undefined; // Add this line to reset the `mode` variable
+  mode = undefined;
 }
 
 
@@ -294,7 +295,7 @@ function makeComputerMoveMid(squares) {
   if (emptyFields.length >= 0) {
     selectedIndex = Math.floor(Math.random() * emptyFields.length);
   } else {
-    checkOutcome();
+    selectedIndex = -1;
     return; 
   }
 }
@@ -306,6 +307,7 @@ function makeComputerMoveMid(squares) {
     turnPlayer = turnPlayer === player ? computer : player;
     
   }
+ 
   checkOutcome();
 }
 
