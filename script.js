@@ -25,6 +25,8 @@ const square7 = document.getElementById("square-7");
 const square8 = document.getElementById("square-8");
 const square9 = document.getElementById("square-9");
 //end screens
+const xWinScreen = document.getElementById("x-wins-screen");
+const oWinScreen = document.getElementById("o-wins-screen");
 const winScreen = document.getElementById("win-screen");
 const loseScreen = document.getElementById("lose-screen");
 const drawScreen = document.getElementById("draw-screen");
@@ -41,6 +43,7 @@ const winAudio = document.getElementById("win-audio");
 const loseAudio = document.getElementById("lose-audio");
 const drawAudio = document.getElementById("draw-audio");
 
+let mode; //to switch between difficulties
 //screen transition
 function transitionScreen(current, next)
 {
@@ -131,7 +134,6 @@ muteButton.addEventListener('click', function() {
 });
 
 //game logic
-let mode;
 let turnPlayer;
 const player = 'X';
 const computer = 'O';
@@ -173,9 +175,9 @@ function checkOutcome() {  //function that checks the outcome of the match
     const [a, b, c] = combination;
     if (gameField[a] !== '' && gameField[a] === gameField[b] && gameField[b] === gameField[c]) {
       if (gameField[a] === 'X') {
-        endScreenTransitions(winScreen, winAudio);
+          mode == 'pvp' ? endScreenTransitions(xWinScreen, winAudio) : endScreenTransitions(winScreen, winAudio);
       } else {
-        endScreenTransitions(loseScreen, loseAudio);
+          mode == 'pvp' ? endScreenTransitions(oWinScreen, winAudio) : endScreenTransitions(loseScreen, loseAudio);
       }
       return true;
     }
@@ -188,30 +190,6 @@ function checkOutcome() {  //function that checks the outcome of the match
   }
   return false;
 }
-
-
-//transitions of the outcome
-function endScreenTransitions(outcome, audio){
-  gameScreen.style.pointerEvents = 'none';
-  setTimeout(() => {
-    transitionScreen(gameScreen, outcome);
-    gameScreen.style.pointerEvents = 'all';
-    audio.play();
-    clearBoard();
-    setTimeout(() => {
-      transitionScreen(outcome, chooseDifficultyScreen);
-      muteButton.style.display = 'inline-block';
-    }, 2000);
-  }, 300);
- 
-}
-function clearBoard(){
-  squares.forEach((square, i) => {
-    square.textContent = '';
-    gameField[i] = '';
-  });
-}
-
 
 
 //computer logic
@@ -251,3 +229,31 @@ function computerMove() {
   checkOutcome();
 
 }
+//standard mode algoithm
+
+//transitions of the outcome
+function endScreenTransitions(outcome, audio){
+  gameScreen.style.pointerEvents = 'none';
+  setTimeout(() => {
+    transitionScreen(gameScreen, outcome);
+    setTimeout(() => {outcome.style.opacity = "1";}, 100)
+    gameScreen.style.pointerEvents = 'all';
+    audio.play();
+    clearBoard();
+    setTimeout(() => {
+      outcome.style.opacity = "0";
+      transitionScreen(outcome, chooseDifficultyScreen);
+      muteButton.style.display = 'inline-block';
+    }, 2000);
+  }, 300);
+ 
+}
+function clearBoard(){
+  squares.forEach((square, i) => {
+    square.textContent = '';
+    gameField[i] = '';
+  });
+}
+
+
+
