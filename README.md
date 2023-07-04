@@ -5,9 +5,6 @@ This is an implementation of the classic game "Tic Tac Toe" using HTML, CSS, and
 - **Standard:** Computer check if there is a winning position after every move is made and tries to capitalise on it
 - **Impossible:** Computer is using the minmax algorithm to determine the best possible course of action making it impossible to win against it
 
-## Full repositoty
-[Rock Paper Scissors REPO](https://github.com/JakaAmbrus/Hollow_x_Hollow) 
-
 ## Game Demo
 
 To see a live demo of the game, you can visit the [Hollow X Hollow demo](https://jakaambrus.github.io/Hollow_x_Hollow/) page.
