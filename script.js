@@ -107,7 +107,12 @@ oSelect.addEventListener('click', () => {
   }
   else if(mode == 'mid'){
     setTimeout(() => {
-      makeComputerMoveMid(squares);
+      computerMoveMid(squares);
+    }, 300);
+  }
+  else if(mode == 'impossible'){
+    setTimeout(() => {
+      impossibleComputerMove(squares)
     }, 300);
   }
 });
@@ -152,11 +157,12 @@ squares.forEach((square, i) => {
       gameField[i] = turnPlayer;
       square.textContent = turnPlayer;
       turnPlayer = turnPlayer === 'X' ? 'O' : 'X';
+      checkOutcome()
       }
       else{
         makeMove(i)
       }
-      checkOutcome()
+      
     }
   });
 });
@@ -206,14 +212,17 @@ function makeMove(i) {
   squares[i].textContent = turnPlayer;
   squares[i].removeEventListener('click', makeMove); 
   turnPlayer = turnPlayer === player ? computer : player;
-  console.log(gameField)
+  checkOutcome()
   if (turnPlayer === computer) {
     gameScreen.style.pointerEvents = 'none';
     setTimeout(() => {
       if (mode === 'easy') {
         computerMove();
       } else if (mode === 'mid') {
-        makeComputerMoveMid(squares);
+        computerMoveMid(squares);
+      }
+      else if(mode == 'impossible'){
+        impossibleComputerMove(squares);
       }
       gameScreen.style.pointerEvents = 'all';
     }, 500);
@@ -243,7 +252,7 @@ function computerMove() {
 }
 
 
-//transitions of the outcome
+//transitions of the outcome//
 function endScreenTransitions(outcome, audio){
   gameScreen.style.pointerEvents = 'none';
   setTimeout(() => {
@@ -270,8 +279,8 @@ function clearBoard() {
 }
 
 
-//mid difficulty logic
-function makeComputerMoveMid(squares) {
+//mid difficulty logic//
+function computerMoveMid(squares) {
   const emptyFields = gameField.reduce((acc, value, index) => {
     if (value === "") {
       acc.push(index);
@@ -286,32 +295,144 @@ function makeComputerMoveMid(squares) {
     gameField[field] = turnPlayer;
     if (checkOutcome()) {
       selectedIndex = field;
+      console.log('this is field that gives value    '+selectedIndex)
       break;
     }
     gameField[field] = "";
   }
 
   if (selectedIndex === undefined) {
-  if (emptyFields.length >= 0) {
-    selectedIndex = Math.floor(Math.random() * emptyFields.length);
+    if (emptyFields.length > 1) {
+      selectedIndex = Math.floor(Math.random() * emptyFields.length);
+      selectedIndex = emptyFields[selectedIndex];
+   
   } else {
-    selectedIndex = -1;
-    return; 
+      selectedIndex = emptyFields[0];
   }
 }
-  const selectedField = emptyFields[selectedIndex];
-  console.log(selectedField)
-  if (selectedField !== undefined){
-    gameField[selectedField] = turnPlayer;
-    squares[selectedField].textContent = turnPlayer;
+    gameField[selectedIndex] = turnPlayer;
+    squares[selectedIndex].textContent = turnPlayer;
     turnPlayer = turnPlayer === player ? computer : player;
-    
+    checkOutcome()
   }
- 
-  checkOutcome();
-}
 
 
+
+
+//maxdifficulty logic
+
+//minmax
+// function minimax(board, depth, maximizingPlayer) {
+//   const scores = {
+//     X: 1,
+//     O: -1,
+//     tie: 0,
+//   };
+
+//   if (getOutcome(board)) {
+//     const outcome = getOutcome(board);
+//     return scores[outcome];
+//   }
+
+//   if (maximizingPlayer) {
+//     let bestScore = -Infinity;
+
+//     for (let i = 0; i < board.length; i++) {
+//       if (board[i] === '') {
+//         board[i] = computer;
+//         const score = minimax(board, depth + 1, false);
+//         board[i] = '';
+//         bestScore = Math.max(score, bestScore);
+//       }
+//     }
+
+//     return bestScore;
+//   } else {
+//     let bestScore = Infinity;
+
+//     for (let i = 0; i < board.length; i++) {
+//       if (board[i] === '') {
+//         board[i] = player;
+//         const score = minimax(board, depth + 1, true);
+//         board[i] = '';
+//         bestScore = Math.min(score, bestScore);
+//       }
+//     }
+
+//     return bestScore;
+//   }
+// }
+
+// function impossibleComputerMove(squares) {
+//   const emptyFields = gameField.reduce((acc, value, index) => {
+//     if (value === "") {
+//       acc.push(index);
+//     }
+//     return acc;
+//   }, []);
+
+//   if (emptyFields.length === 0) {
+//     // No empty fields left, exit the function
+//     return;
+//   }
+
+//   let bestScore = -Infinity;
+//   let bestMove;
+
+//   for (let i = 0; i < emptyFields.length; i++) {
+//     const field = emptyFields[i];
+//     squares[field].textContent = computer;
+//     const score = minimax(getBoardFromSquares(squares), 0, false);
+//     squares[field].textContent = '';
+
+//     if (score > bestScore) {
+//       bestScore = score;
+//       bestMove = field;
+//     }
+//   }
+
+//   squares[bestMove].textContent = computer;
+//   checkOutcome();
+// }
+
+// function getOutcome(board) {
+//   const winningCombinations = [
+//     // horizontally
+//     [0, 1, 2],
+//     [3, 4, 5],
+//     [6, 7, 8],
+//     // vertically
+//     [0, 3, 6],
+//     [1, 4, 7],
+//     [2, 5, 8],
+//     // diagonally
+//     [0, 4, 8],
+//     [2, 4, 6]
+//   ];
+
+//   for (const combination of winningCombinations) {
+//     const [a, b, c] = combination;
+//     if (
+//       board[a] !== '' &&
+//       board[a] === board[b] &&
+//       board[b] === board[c]
+//     ) {
+//       return board[a];
+//     }
+//   }
+
+//   const fullBoard = board.every(square => square !== '');
+//   if (fullBoard) {
+//     return 'tie';
+//   }
+
+//   return '';
+// }
+
+// // Utility function to extract the game board from the squares
+// function getBoardFromSquares(squares) {
+//   return squares.map(square => square.textContent);
+// }
 
 
 
