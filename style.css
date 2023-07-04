@@ -252,6 +252,10 @@ margin-bottom: 2.5vh;
     font-size: 2em;
     cursor: pointer;
 }
+#x-turn-button{
+    cursor: none;
+    pointer-events: none;
+}
 .turn-select-toggle{
     background: none;
     color: var(--primary-color);

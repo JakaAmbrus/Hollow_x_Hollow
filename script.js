@@ -44,6 +44,7 @@ const bonesAudio = document.getElementById("bones");
 const winAudio = document.getElementById("win-audio");
 const loseAudio = document.getElementById("lose-audio");
 const drawAudio = document.getElementById("draw-audio");
+const clickAudio = document.getElementById("click-audio");
 
 let mode; //to switch between difficulties
 //screen transition
@@ -137,6 +138,8 @@ oSelect.addEventListener('click', () => {
   }
 });
 
+//starting player selection
+
 let remainer;
 
 xToggleSelect.addEventListener('click', function() {
@@ -151,8 +154,13 @@ oToggleSelect.addEventListener('click', () => {
 function selectStarterToggle(selected, other, n){
   selected.classList.add("turn-select-toggle");
   other.classList.remove("turn-select-toggle");
+  selected.style.pointerEvents = 'none';
+  other.style.pointerEvents = 'all';
+  selected.style.cursor = 'none'
+  other.style.cursor = 'pointer'
   turnPlayer = n;
   remainer = turnPlayer;
+  clickAudio.play()
   
 }
 function turnPlayerUndefined(){
