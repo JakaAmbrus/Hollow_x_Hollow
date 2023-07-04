@@ -11,6 +11,8 @@ const impossibleBtn = document.getElementById("impossible-btn");
 const chooseTurnScreen = document.getElementById("choose-turn-screen");
 const xSelect = document.getElementById("x-select");
 const oSelect = document.getElementById("o-select");
+const xToggleSelect = document.getElementById("x-turn-button");
+const oToggleSelect = document.getElementById("o-turn-button");
 //game screen
 const gameScreen = document.getElementById("game-screen");
 const pvpBtn = document.getElementById("pvp");
@@ -44,11 +46,10 @@ const loseAudio = document.getElementById("lose-audio");
 const drawAudio = document.getElementById("draw-audio");
 
 let mode; //to switch between difficulties
-
 //screen transition
 function transitionScreen(current, next)
 {
-  if(next == overlay || next == chooseDifficultyScreen || next == gameScreen)
+  if(next == overlay || next == chooseDifficultyScreen || next == gameScreen || next ==chooseTurnScreen)
   {
   current.style.display = 'none';
   next.style.display = 'grid';
@@ -92,30 +93,73 @@ pvpBtn.addEventListener('click', function() {
 });
 //turn selection
 xSelect.addEventListener('click', () => {
-  turnPlayer = player;
+  player = 'X';
+  computer = 'O';
+  turnPlayerUndefined()
   transitionScreen(chooseTurnScreen, gameScreen);
   transitionAudio.play();
-});
-oSelect.addEventListener('click', () => {
-  turnPlayer = computer;
-  transitionScreen(chooseTurnScreen, gameScreen);
-  transitionAudio.play();
-  if(mode == 'easy'){
+   if(mode == 'easy' && turnPlayer == computer){
     setTimeout(() => {
       computerMove();
     }, 300);
   }
-  else if(mode == 'mid'){
+  else if(mode == 'mid' && turnPlayer == computer){
     setTimeout(() => {
       computerMoveMid(squares);
     }, 300);
   }
-  else if(mode == 'impossible'){
+  else if(mode == 'impossible' && turnPlayer == computer){
     setTimeout(() => {
       impossibleComputerMove(squares)
     }, 300);
   }
 });
+oSelect.addEventListener('click', () => {
+  player = 'O';
+  computer = 'X';
+  turnPlayerUndefined()
+  transitionScreen(chooseTurnScreen, gameScreen);
+  transitionAudio.play();
+  if(mode == 'easy' && turnPlayer == computer){
+    setTimeout(() => {
+      computerMove();
+    }, 300);
+  }
+  else if(mode == 'mid' && turnPlayer == computer){
+    setTimeout(() => {
+      computerMoveMid(squares);
+    }, 300);
+  }
+  else if(mode == 'impossible' && turnPlayer == computer){
+    setTimeout(() => {
+      impossibleComputerMove(squares)
+    }, 300);
+  }
+});
+
+let remainer;
+
+xToggleSelect.addEventListener('click', function() {
+  selectStarterToggle(xToggleSelect, oToggleSelect, 'X');
+});
+
+oToggleSelect.addEventListener('click', () => {
+  selectStarterToggle(oToggleSelect, xToggleSelect, 'O');
+});
+
+
+function selectStarterToggle(selected, other, n){
+  selected.classList.add("turn-select-toggle");
+  other.classList.remove("turn-select-toggle");
+  turnPlayer = n;
+  remainer = turnPlayer;
+  
+}
+function turnPlayerUndefined(){
+  if(turnPlayer == undefined){
+    turnPlayer = 'X';
+  }
+}
 
 //difficulty hover sounds
 
@@ -146,9 +190,10 @@ muteButton.addEventListener('click', function() {
 
 //game logic
 let turnPlayer;
-const player = 'X';
-const computer = 'O';
+let player ;
+let computer ;
 let gameField = ['', '', '', '', '', '', '', '', ''];
+// Event listener for PvP mode
 //placing the choices
 squares.forEach((square, i) => {
   square.addEventListener('click', () => {
@@ -165,6 +210,18 @@ squares.forEach((square, i) => {
       
     }
   });
+});
+square4.addEventListener('click', () => {
+  if (gameField[3] === '') {
+    if (mode === 'pvp') {
+      gameField[3] = turnPlayer;
+      square4.textContent = turnPlayer;
+      turnPlayer = turnPlayer === 'X' ? 'O' : 'X';
+      checkOutcome();
+    } else {
+      makeMove(3);
+    }
+  }
 });
 
 
@@ -186,10 +243,10 @@ function checkOutcome() {
   for (const combination of winningCombinations) {
     const [a, b, c] = combination;
     if (gameField[a] !== '' && gameField[a] === gameField[b] && gameField[b] === gameField[c]) {
-      if (gameField[a] === 'X') {
-        mode === 'pvp' ? endScreenTransitions(xWinScreen, winAudio) : endScreenTransitions(winScreen, winAudio);
-      } else {
-        mode === 'pvp' ? endScreenTransitions(oWinScreen, winAudio) : endScreenTransitions(loseScreen, loseAudio);
+      if (mode !== 'pvp') {
+          gameField[a] === player ? endScreenTransitions(winScreen, winAudio) : endScreenTransitions(loseScreen, loseAudio);
+      } else{
+          gameField[a] === 'X' ? endScreenTransitions(xWinScreen, winAudio) : endScreenTransitions(oWinScreen, winAudio);
       }
       return true;
     }
@@ -273,7 +330,7 @@ function clearBoard() {
   squares.forEach((square, i) => {
     square.textContent = '';
     gameField[i] = '';
-    turnPlayer = undefined;
+    turnPlayer = remainer;
   });
   mode = undefined;
 }
@@ -433,9 +490,3 @@ function computerMoveMid(squares) {
 // function getBoardFromSquares(squares) {
 //   return squares.map(square => square.textContent);
 // }
-
-
-
-
-
-

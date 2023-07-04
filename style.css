@@ -25,7 +25,7 @@
 
 *{
     box-sizing: border-box;
-    /* border: 2px solid blue; */
+   
     
 }
 body{
@@ -209,32 +209,60 @@ margin-bottom: 2.5vh;
 
 
 /* choose turn screen */
+
 #choose-turn-screen{
     position: absolute;
     width: 100%;
     height: 100%;
     display: none;
-    flex-direction: column;
-    justify-content: center;
     align-items: center;
+    grid-template-rows: 2fr 4.5fr 2fr;
     font-size: clamp(20px, 2vw, 2vw);
 }
+#choose-turn-screen > p{
+    display: flex;
+    justify-content: center;
+    align-items: end;
+    height: 100%;
+}
 
-#turn-selections{
+#player-selections{
     display: flex;
     width: 100%;
     justify-content: space-around;
+    align-items: end;
     font-size: 6em;
 }
 #x-select, #o-select{
     cursor: pointer;
 }
+#turn-selector{
+    display: flex;
+    justify-content: center;
+    font-size: 0.5em;
+    
+}
 
+#turn-buttons{
+    display: flex;
+    height: 3em;
+}
+#x-turn-button, #o-turn-button{
+    width: 50%;
+    font-size: 2em;
+    cursor: pointer;
+}
+.turn-select-toggle{
+    background: none;
+    color: var(--primary-color);
+    border: 0.05em solid var(--primary-color);
+    
+}
 
 /* game screen */
 
 #game-screen{
-    position: absolute;
+    
     display: none;
     grid-template: 1fr 1fr 1fr / 1fr 1fr 1fr;
     top: 2%;
@@ -321,6 +349,9 @@ margin-bottom: 2.5vh;
     .difficulty-btns{
         height: 30vw;
         width: 30vw;
+    }
+    #choose-turn-screen{
+        font-size: 70px;
     }
     #difficulty-settings{
        bottom: 20%;
