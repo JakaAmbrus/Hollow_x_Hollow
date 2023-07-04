@@ -63,7 +63,7 @@ function transitionScreen(current, next)
     clearBoard();
   }
 }
-
+//button transition assignments
 startBtn.addEventListener('click', function() {
   transitionScreen(overlay, chooseDifficultyScreen);
   transitionAudio.play()
@@ -196,19 +196,19 @@ muteButton.addEventListener('click', function() {
   muteButton.setAttribute('src', isMuted ? 'img/muted.png' : 'img/unmuted.png'); 
 });
 
-//game logic
+//game logic//
 let turnPlayer;
 let player ;
 let computer ;
 let gameField = ['', '', '', '', '', '', '', '', ''];
-// Event listener for PvP mode
-//placing the choices
-squares.forEach((square, i) => {
+
+squares.forEach((square, i) => { //creating the empty squares and making them clickable
   square.addEventListener('click', () => {
     if (gameField[i] === '') {
       if(mode == 'pvp'){
       gameField[i] = turnPlayer;
       square.textContent = turnPlayer;
+      clickAudio.play()
       turnPlayer = turnPlayer === 'X' ? 'O' : 'X';
       checkOutcome()
       }
@@ -219,21 +219,8 @@ squares.forEach((square, i) => {
     }
   });
 });
-square4.addEventListener('click', () => {
-  if (gameField[3] === '') {
-    if (mode === 'pvp') {
-      gameField[3] = turnPlayer;
-      square4.textContent = turnPlayer;
-      turnPlayer = turnPlayer === 'X' ? 'O' : 'X';
-      checkOutcome();
-    } else {
-      makeMove(3);
-    }
-  }
-});
 
-
-function checkOutcome() {
+function checkOutcome() { //checks the winning outcome
   const winningCombinations = [
     // horizontally
     [0, 1, 2], 
@@ -269,12 +256,10 @@ function checkOutcome() {
   return false;
 }
 
-
-
-//computer logic
-function makeMove(i) {
+function makeMove(i) { //computer moves
   gameField[i] = turnPlayer;
   squares[i].textContent = turnPlayer;
+  clickAudio.play()
   squares[i].removeEventListener('click', makeMove); 
   turnPlayer = turnPlayer === player ? computer : player;
   checkOutcome()
@@ -294,58 +279,25 @@ function makeMove(i) {
   }
 }
 
-function computerMove() {
+function computerMove() { //easy difficulty logic
   const emptyFields = gameField.reduce((acc, value, index) => {
     if (value === '') {
       acc.push(index);
     }
     return acc;
   }, []);
-
   let selectedIndex;
-  
   selectedIndex = Math.floor(Math.random() * emptyFields.length);
-  
-
   const selectedField = emptyFields[selectedIndex];
-
   gameField[selectedField] = turnPlayer;
   squares[selectedField].textContent = turnPlayer;
   turnPlayer = turnPlayer === player ? computer : player;
+  clickAudio.play()
   checkOutcome();
 
 }
 
-
-//transitions of the outcome//
-function endScreenTransitions(outcome, audio){
-  gameScreen.style.pointerEvents = 'none';
-  setTimeout(() => {
-    transitionScreen(gameScreen, outcome);
-    setTimeout(() => {outcome.style.opacity = "1";}, 100)
-    gameScreen.style.pointerEvents = 'all';
-    audio.play();
-    clearBoard();
-    setTimeout(() => {
-      outcome.style.opacity = "0";
-      transitionScreen(outcome, chooseDifficultyScreen);
-      muteButton.style.display = 'inline-block';
-    }, 2000);
-  }, 300);
- 
-}
-function clearBoard() {
-  squares.forEach((square, i) => {
-    square.textContent = '';
-    gameField[i] = '';
-    turnPlayer = remainer;
-  });
-  mode = undefined;
-}
-
-
-//mid difficulty logic//
-function computerMoveMid(squares) {
+function computerMoveMid(squares) { //mid difficulty logic
   const emptyFields = gameField.reduce((acc, value, index) => {
     if (value === "") {
       acc.push(index);
@@ -355,12 +307,10 @@ function computerMoveMid(squares) {
 
   let selectedIndex;
 
-  // Check for a winning move
-  for (const field of emptyFields) {
+  for (const field of emptyFields) {  // Check for a winning move
     gameField[field] = turnPlayer;
     if (checkOutcome()) {
       selectedIndex = field;
-      console.log('this is field that gives value    '+selectedIndex)
       break;
     }
     gameField[field] = "";
@@ -378,10 +328,38 @@ function computerMoveMid(squares) {
     gameField[selectedIndex] = turnPlayer;
     squares[selectedIndex].textContent = turnPlayer;
     turnPlayer = turnPlayer === player ? computer : player;
+    clickAudio.play()
     checkOutcome()
   }
 
+//clears the board
+function clearBoard() {
+  squares.forEach((square, i) => {
+    square.textContent = '';
+    gameField[i] = '';
+    turnPlayer = remainer;
+  });
+  mode = undefined;
+}
 
+
+//transitions of the outcome
+function endScreenTransitions(outcome, audio){
+  gameScreen.style.pointerEvents = 'none';
+  setTimeout(() => {
+    transitionScreen(gameScreen, outcome);
+    setTimeout(() => {outcome.style.opacity = "1";}, 100)
+    gameScreen.style.pointerEvents = 'all';
+    audio.play();
+    clearBoard();
+    setTimeout(() => {
+      outcome.style.opacity = "0";
+      transitionScreen(outcome, chooseDifficultyScreen);
+      muteButton.style.display = 'inline-block';
+    }, 2000);
+  }, 300);
+ 
+}
 
 
 //maxdifficulty logic
