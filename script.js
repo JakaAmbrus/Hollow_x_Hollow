@@ -17,6 +17,7 @@ const oToggleSelect = document.getElementById("o-turn-button");
 const gameScreen = document.getElementById("game-screen");
 const pvpBtn = document.getElementById("pvp");
 const squares = document.querySelectorAll(".square");
+const square0 = document.getElementById("square-0");
 const square1 = document.getElementById("square-1");
 const square2 = document.getElementById("square-2");
 const square3 = document.getElementById("square-3");
@@ -25,7 +26,6 @@ const square5 = document.getElementById("square-5");
 const square6 = document.getElementById("square-6");
 const square7 = document.getElementById("square-7");
 const square8 = document.getElementById("square-8");
-const square9 = document.getElementById("square-9");
 //end screens
 const xWinScreen = document.getElementById("x-wins-screen");
 const oWinScreen = document.getElementById("o-wins-screen");
@@ -239,10 +239,16 @@ function checkOutcome() { //checks the winning outcome
     const [a, b, c] = combination;
     if (gameField[a] !== '' && gameField[a] === gameField[b] && gameField[b] === gameField[c]) {
       if (mode !== 'pvp') {
+        let winningSquares = [a, b, c];
           gameField[a] === player ? endScreenTransitions(winScreen, winAudio) : endScreenTransitions(loseScreen, loseAudio);
+          highlightWinningSquares(winningSquares)
+
       } else{
+        let winningSquares = [a, b, c];
           gameField[a] === 'X' ? endScreenTransitions(xWinScreen, winAudio) : endScreenTransitions(oWinScreen, winAudio);
+          highlightWinningSquares(winningSquares)
       }
+     
       return true;
     }
   }
@@ -250,7 +256,8 @@ function checkOutcome() { //checks the winning outcome
   const fullBoard = gameField.every(square => square !== '');
   if (fullBoard) {
     endScreenTransitions(drawScreen, drawAudio);
-    return true;
+    highlightAllSquares();
+    return 'tie';
   }
 
   return false;
@@ -275,7 +282,7 @@ function makeMove(i) { //computer moves
         impossibleComputerMove(squares);
       }
       gameScreen.style.pointerEvents = 'all';
-    }, 500);
+    }, 600);
   }
 }
 
@@ -356,55 +363,55 @@ function endScreenTransitions(outcome, audio){
       outcome.style.opacity = "0";
       transitionScreen(outcome, chooseDifficultyScreen);
       muteButton.style.display = 'inline-block';
-    }, 2000);
-  }, 300);
+    }, 3000);
+  }, 599);
  
 }
 
 
 //maxdifficulty logic
 
-//minmax
-// function minimax(board, depth, maximizingPlayer) {
-//   const scores = {
-//     X: 1,
-//     O: -1,
-//     tie: 0,
-//   };
+// minmax
+function minimax(board, depth, maximizingPlayer) {
+  const scores = {
+    X: 1,
+    O: -1,
+    tie: 0,
+  };
 
-//   if (getOutcome(board)) {
-//     const outcome = getOutcome(board);
-//     return scores[outcome];
-//   }
+  if (getOutcome(board)) {
+    const outcome = getOutcome(board);
+    return scores[outcome];
+  }
 
-//   if (maximizingPlayer) {
-//     let bestScore = -Infinity;
+  if (maximizingPlayer) {
+    let bestScore = -Infinity;
 
-//     for (let i = 0; i < board.length; i++) {
-//       if (board[i] === '') {
-//         board[i] = computer;
-//         const score = minimax(board, depth + 1, false);
-//         board[i] = '';
-//         bestScore = Math.max(score, bestScore);
-//       }
-//     }
+    for (let i = 0; i < board.length; i++) {
+      if (board[i] === '') {
+        board[i] = computer;
+        const score = minimax(board, depth + 1, false);
+        board[i] = '';
+        bestScore = Math.max(score, bestScore);
+      }
+    }
 
-//     return bestScore;
-//   } else {
-//     let bestScore = Infinity;
+    return bestScore;
+  } else {
+    let bestScore = Infinity;
 
-//     for (let i = 0; i < board.length; i++) {
-//       if (board[i] === '') {
-//         board[i] = player;
-//         const score = minimax(board, depth + 1, true);
-//         board[i] = '';
-//         bestScore = Math.min(score, bestScore);
-//       }
-//     }
+    for (let i = 0; i < board.length; i++) {
+      if (board[i] === '') {
+        board[i] = player;
+        const score = minimax(board, depth + 1, true);
+        board[i] = '';
+        bestScore = Math.min(score, bestScore);
+      }
+    }
 
-//     return bestScore;
-//   }
-// }
+    return bestScore;
+  }
+}
 
 // function impossibleComputerMove(squares) {
 //   const emptyFields = gameField.reduce((acc, value, index) => {
@@ -476,3 +483,24 @@ function endScreenTransitions(outcome, audio){
 // function getBoardFromSquares(squares) {
 //   return squares.map(square => square.textContent);
 // }
+function highlightWinningSquares(winningSquares) {
+  for (const selectedSquare of winningSquares) {
+    const squareElement = document.getElementById('square-' + selectedSquare);
+    squareElement.classList.add('winning-square');
+  }
+  setTimeout(() => {
+    for (const selectedSquare of winningSquares) {
+      const squareElement = document.getElementById('square-' + selectedSquare);
+      squareElement.classList.remove('winning-square');
+    }
+  }, 600)
+}
+function highlightAllSquares() {
+  const squares = document.querySelectorAll(".square");
+  squares.forEach((square) => {
+    square.style.animation = 'expand 0.6s ease-in forwards';
+    setTimeout(() => {
+      square.style.animation = 'none';
+    }, 600);
+  });
+}
