@@ -117,7 +117,7 @@ xSelect.addEventListener('click', () => {
     gameScreen.style.pointerEvents = 'none'
     setTimeout(() => {
       gameScreen.style.pointerEvents = 'all'
-      maxDifficultyComputer()
+      computerMove();
     }, 300);
   }
 });
@@ -142,9 +142,10 @@ oSelect.addEventListener('click', () => {
     }, 300);
   }
   else if(mode == 'impossible' && turnPlayer == computer){
+    gameScreen.style.pointerEvents = 'none'
     setTimeout(() => {
       gameScreen.style.pointerEvents = 'all'
-      maxDifficultyComputer()
+      computerMoveMax()
     }, 300);
   }
 });
@@ -251,23 +252,7 @@ squares.forEach((square, i) => {
     }
   });
 });
-// squares.forEach((square, i) => { //creating the empty squares and making them clickable
-//   square.addEventListener('click', () => {
-//     if (gameField[i] === '') {
-//       if(mode == 'pvp'){
-//       gameField[i] = turnPlayer;
-//       square.textContent = turnPlayer;
-//       clickAudio.play()
-//       turnPlayer = turnPlayer === 'x' ? 'o' : 'x';
-//       checkOutcome()
-//       }
-//       else{
-//         makeMove(i)
-//       }
-      
-//     }
-//   });
-// });
+
 let gameEnded;
 function checkOutcome() { //checks the winning outcome
   const winningCombinations = [
@@ -341,7 +326,7 @@ function makeMove(i) { //the part that handles movement for non pvp modes
       }
       else if(mode == 'impossible'){
         if (gameEnded) return;
-        maxDifficultyComputer();
+        computerMoveMax();
       }
       gameScreen.style.pointerEvents = 'all';
     }, 600);
@@ -402,6 +387,112 @@ function computerMoveMid(squares) { //mid difficulty logic
     checkOutcome()
   }
 
+//max difficulty logic
+
+
+function computerMoveMax() {
+  const emptyFields = gameField.reduce((array, value, i) => {
+    if (value === "") {
+      array.push(i);
+    }
+    return array;
+  }, []);
+
+  let selectedIndex = -Infinity;
+  let bestMovesArr = [];
+
+  for (const field of emptyFields) {
+    gameField[field] = computer;
+
+    const score = minmaxAlgorithm(gameField, 0, false, -Infinity, Infinity);
+
+    gameField[field] = "";
+
+    if (score > selectedIndex) {
+      selectedIndex = score;
+      bestMovesArr = [field];
+    } else if (score === selectedIndex) {
+      bestMovesArr.push(field);
+    }
+  }
+
+  const randomIndex = Math.floor(Math.random() * bestMovesArr.length);
+  const bestMove = bestMovesArr[randomIndex];
+
+  gameField[bestMove] = computer;
+  squares[bestMove].textContent = computer;
+  turnPlayer = player;
+  clickAudio.play();
+  checkOutcome();
+}
+
+// minmax
+function minmaxAlgorithm(playField, depth, maximizingPlayer, alpha, beta) {
+  if (checkOutcomeMax(playField, player)) {
+    return -10 + depth; //add value when player wins
+  }
+
+  if (checkOutcomeMax(playField, computer)) {
+    return 10 - depth; //add value when player wins
+  }
+
+  if (isFieldFull(playField)) {
+    return 0; // this is a draw, no change
+  }
+
+  let bestScore = maximizingPlayer ? -Infinity : Infinity;
+
+  for (let i = 0; i < playField.length; i++) {
+    if (playField[i] === '') {
+      playField[i] = maximizingPlayer ? computer : player;
+      let score = minmaxAlgorithm(playField, depth + 1, !maximizingPlayer, alpha, beta);
+      playField[i] = '';
+
+      if (maximizingPlayer) {
+        bestScore = Math.max(score, bestScore);
+        alpha = Math.max(alpha, bestScore);
+      } else {
+        bestScore = Math.min(score, bestScore);
+        beta = Math.min(beta, bestScore);
+      }
+
+      if (beta <= alpha) {
+        break; // if beta is not bigger there is no point in continuing
+      }
+    }
+  }
+
+  return bestScore;
+}
+
+function isFieldFull(playField) {
+  return playField.every(field => field !== '');
+}
+
+function checkOutcomeMax(playField, selectedPlayer) { //doing this again with selectedPlayer in mind
+  const winningCombinations = [
+    // horizontally
+    [0, 1, 2], 
+    [3, 4, 5], 
+    [6, 7, 8],
+    // vertically
+    [0, 3, 6], 
+    [1, 4, 7], 
+    [2, 5, 8], 
+    // diagonally
+    [0, 4, 8], 
+    [2, 4, 6]  
+  ];
+
+  for (const combination of winningCombinations) {
+    const [a, b, c] = combination;
+    if (playField[a] === selectedPlayer && playField[b] === selectedPlayer && playField[c] === selectedPlayer) {
+      return true; // if the selected player has a winning combination
+    }
+  }
+
+  return false; // if the selected player has no winning combination
+}
 //clears the board
 function clearBoard() {
   squares.forEach((square, i) => {
@@ -463,102 +554,4 @@ function highlightAllSquares() {
       square.style.textStroke = '';
     }, 910);
   });
-}
-
-
-
-
-
-
-
-
-
-
-
-
-//maxdifficulty logic
-
-// minmax
-function maxDifficultyComputer() {
-  const emptyFields = gameField.reduce((acc, value, index) => {
-    if (value === "") {
-      acc.push(index);
-    }
-    return acc;
-  }, []);
-
-  let bestScore = -Infinity;
-  let bestMove;
-
-  for (const field of emptyFields) {
-    gameField[field] = computer;
-
-    const score = minmax(gameField, 0, false);
-
-    gameField[field] = "";
-
-    if (score > bestScore) {
-      bestScore = score;
-      bestMove = field;
-    }
-  }
-
-
-
-  gameField[bestMove] = computer;
-  squares[bestMove].textContent = computer;
-  turnPlayer = player;
-  clickAudio.play();
-  checkOutcome();
-}
-
-function minmax(board, depth, maximizingPlayer) {
-  if (checkOutcomeMax(board, player)) {
-    return -10 + depth; // The player won, so we assign a higher score the sooner it wins
-  }
-
-  if (checkOutcomeMax(board, computer)) {
-    return 10 - depth; // The computer won, so we assign a higher score the sooner it wins
-  }
-
-  if (isBoardFull(board)) {
-    return 0; // It's a draw
-  }
-
-  let bestScore = -Infinity;
-  for (let i = 0; i < board.length; i++) {
-    if (board[i] === '') {
-      board[i] = computer;
-      let score = minmax(board, depth + 1, !maximizingPlayer);
-      board[i] = '';
-      bestScore = Math.max(score, bestScore);
-    }
-  }
-
-  if (!maximizingPlayer) {
-    bestScore *= -1;
-  }
-
-  return bestScore;
-}
-
-function isBoardFull(board) {
-  return board.every(field => field !== '');
-}
-
-function checkOutcomeMax(board, player) {
-  const winningCombinations = [
-    [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
-    [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
-    [0, 4, 8], [2, 4, 6] // Diagonals
-  ];
-
-  for (const combination of winningCombinations) {
-    const [a, b, c] = combination;
-    if (board[a] === player && board[b] === player && board[c] === player) {
-      return true; // Player has won
-    }
-  }
-
-  return false; // No winning combination found
 }
