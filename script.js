@@ -117,7 +117,7 @@ xSelect.addEventListener('click', () => {
     gameScreen.style.pointerEvents = 'none'
     setTimeout(() => {
       gameScreen.style.pointerEvents = 'all'
-      impossibleComputerMove(squares)
+      maxDifficultyComputer()
     }, 300);
   }
 });
@@ -144,7 +144,7 @@ oSelect.addEventListener('click', () => {
   else if(mode == 'impossible' && turnPlayer == computer){
     setTimeout(() => {
       gameScreen.style.pointerEvents = 'all'
-      impossibleComputerMove(squares)
+      maxDifficultyComputer()
     }, 300);
   }
 });
@@ -290,12 +290,16 @@ function checkOutcome() { //checks the winning outcome
         gameEnded = true;
         let winningSquares = [a, b, c];
           gameField[a] === player ? endScreenTransitions(winScreen, winAudio) : endScreenTransitions(loseScreen, loseAudio);
-          highlightWinningSquares(winningSquares)
+          setTimeout(() => {
+            highlightWinningSquares(winningSquares)
+          },50);
 
       } else{
         let winningSquares = [a, b, c];
           gameField[a] === 'x' ? endScreenTransitions(xWinScreen, winAudio) : endScreenTransitions(oWinScreen, winAudio);
-          highlightWinningSquares(winningSquares)
+          setTimeout(() => {
+            highlightWinningSquares(winningSquares)
+          },80);
           
       }
      
@@ -306,7 +310,9 @@ function checkOutcome() { //checks the winning outcome
   const fullBoard = gameField.every(square => square !== '');
   if (fullBoard) {
     endScreenTransitions(drawScreen, drawAudio);
-    highlightAllSquares();
+    setTimeout(() => {
+      highlightAllSquares();
+    },80);
     gameEnded = true;
     return 'tie';
   }
@@ -334,7 +340,8 @@ function makeMove(i) { //the part that handles movement for non pvp modes
         computerMoveMid(squares);
       }
       else if(mode == 'impossible'){
-        impossibleComputerMove(squares);
+        if (gameEnded) return;
+        maxDifficultyComputer();
       }
       gameScreen.style.pointerEvents = 'all';
     }, 600);
@@ -354,7 +361,7 @@ function computerMove() { //easy difficulty logic
   const selectedField = emptyFields[selectedIndex];
   gameField[selectedField] = turnPlayer;
   squares[selectedField].textContent = turnPlayer;
-  turnPlayer = turnPlayer === player ? computer : player;
+  turnPlayer = player;
   clickAudio.play()
   checkOutcome();
 
@@ -390,7 +397,7 @@ function computerMoveMid(squares) { //mid difficulty logic
 }
     gameField[selectedIndex] = turnPlayer;
     squares[selectedIndex].textContent = turnPlayer;
-    turnPlayer = turnPlayer === player ? computer : player;
+    turnPlayer = player;
     clickAudio.play()
     checkOutcome()
   }
@@ -428,7 +435,7 @@ function highlightWinningSquares(winningSquares) {
   for (const selectedSquare of winningSquares) {
     const squareElement = document.getElementById('square-' + selectedSquare);
     squareElement.style.animation = 'expand 0.8s ease forwards';
-    squareElement.style.color = 'transparent';
+    squareElement.style.color = 'rgb(18, 18, 18)';
     squareElement.style.webkitTextStroke = '2px #f1f4f8';
     squareElement.style.textStroke = '1px #f1f4f8';
   }
@@ -446,7 +453,7 @@ function highlightAllSquares() {
   const squares = document.querySelectorAll(".square");
   squares.forEach((square) => {
     square.style.animation = 'expand 0.8s ease forwards';
-    square.style.color = 'transparent';
+    square.style.color = 'rgb(18, 18, 18)';
     square.style.webkitTextStroke = '1px #f1f4f8';
     square.style.textStroke = '1px #f1f4f8';
     setTimeout(() => {
@@ -458,119 +465,100 @@ function highlightAllSquares() {
   });
 }
 
+
+
+
+
+
+
+
+
+
+
+
 //maxdifficulty logic
 
 // minmax
-function minimax(board, depth, maximizingPlayer) {
-  const scores = {
-    X: 1,
-    O: -1,
-    tie: 0,
-  };
+function maxDifficultyComputer() {
+  const emptyFields = gameField.reduce((acc, value, index) => {
+    if (value === "") {
+      acc.push(index);
+    }
+    return acc;
+  }, []);
 
-  if (getOutcome(board)) {
-    const outcome = getOutcome(board);
-    return scores[outcome];
+  let bestScore = -Infinity;
+  let bestMove;
+
+  for (const field of emptyFields) {
+    gameField[field] = computer;
+
+    const score = minmax(gameField, 0, false);
+
+    gameField[field] = "";
+
+    if (score > bestScore) {
+      bestScore = score;
+      bestMove = field;
+    }
   }
 
-  if (maximizingPlayer) {
-    let bestScore = -Infinity;
 
-    for (let i = 0; i < board.length; i++) {
-      if (board[i] === '') {
-        board[i] = computer;
-        const score = minimax(board, depth + 1, false);
-        board[i] = '';
-        bestScore = Math.max(score, bestScore);
-      }
-    }
 
-    return bestScore;
-  } else {
-    let bestScore = Infinity;
-
-    for (let i = 0; i < board.length; i++) {
-      if (board[i] === '') {
-        board[i] = player;
-        const score = minimax(board, depth + 1, true);
-        board[i] = '';
-        bestScore = Math.min(score, bestScore);
-      }
-    }
-
-    return bestScore;
-  }
+  gameField[bestMove] = computer;
+  squares[bestMove].textContent = computer;
+  turnPlayer = player;
+  clickAudio.play();
+  checkOutcome();
 }
 
-// function impossibleComputerMove(squares) {
-//   const emptyFields = gameField.reduce((acc, value, index) => {
-//     if (value === "") {
-//       acc.push(index);
-//     }
-//     return acc;
-//   }, []);
+function minmax(board, depth, maximizingPlayer) {
+  if (checkOutcomeMax(board, player)) {
+    return -10 + depth; // The player won, so we assign a higher score the sooner it wins
+  }
 
-//   if (emptyFields.length === 0) {
-//     // No empty fields left, exit the function
-//     return;
-//   }
+  if (checkOutcomeMax(board, computer)) {
+    return 10 - depth; // The computer won, so we assign a higher score the sooner it wins
+  }
 
-//   let bestScore = -Infinity;
-//   let bestMove;
+  if (isBoardFull(board)) {
+    return 0; // It's a draw
+  }
 
-//   for (let i = 0; i < emptyFields.length; i++) {
-//     const field = emptyFields[i];
-//     squares[field].textContent = computer;
-//     const score = minimax(getBoardFromSquares(squares), 0, false);
-//     squares[field].textContent = '';
+  let bestScore = -Infinity;
+  for (let i = 0; i < board.length; i++) {
+    if (board[i] === '') {
+      board[i] = computer;
+      let score = minmax(board, depth + 1, !maximizingPlayer);
+      board[i] = '';
+      bestScore = Math.max(score, bestScore);
+    }
+  }
 
-//     if (score > bestScore) {
-//       bestScore = score;
-//       bestMove = field;
-//     }
-//   }
+  if (!maximizingPlayer) {
+    bestScore *= -1;
+  }
 
-//   squares[bestMove].textContent = computer;
-//   checkOutcome();
-// }
+  return bestScore;
+}
 
-// function getOutcome(board) {
-//   const winningCombinations = [
-//     // horizontally
-//     [0, 1, 2],
-//     [3, 4, 5],
-//     [6, 7, 8],
-//     // vertically
-//     [0, 3, 6],
-//     [1, 4, 7],
-//     [2, 5, 8],
-//     // diagonally
-//     [0, 4, 8],
-//     [2, 4, 6]
-//   ];
+function isBoardFull(board) {
+  return board.every(field => field !== '');
+}
 
-//   for (const combination of winningCombinations) {
-//     const [a, b, c] = combination;
-//     if (
-//       board[a] !== '' &&
-//       board[a] === board[b] &&
-//       board[b] === board[c]
-//     ) {
-//       return board[a];
-//     }
-//   }
+function checkOutcomeMax(board, player) {
+  const winningCombinations = [
+    [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+    [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+    [0, 4, 8], [2, 4, 6] // Diagonals
+  ];
 
-//   const fullBoard = board.every(square => square !== '');
-//   if (fullBoard) {
-//     return 'tie';
-//   }
+  for (const combination of winningCombinations) {
+    const [a, b, c] = combination;
+    if (board[a] === player && board[b] === player && board[c] === player) {
+      return true; // Player has won
+    }
+  }
 
-//   return '';
-// }
-
-// // Utility function to extract the game board from the squares
-// function getBoardFromSquares(squares) {
-//   return squares.map(square => square.textContent);
-// }
-
-
+  return false; // No winning combination found
+}
