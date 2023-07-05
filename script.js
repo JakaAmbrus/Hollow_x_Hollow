@@ -94,45 +94,56 @@ pvpBtn.addEventListener('click', function() {
 });
 //turn selection
 xSelect.addEventListener('click', () => {
-  player = 'X';
-  computer = 'O';
+  player = 'x';
+  computer = 'o';
   turnPlayerUndefined()
   transitionScreen(chooseTurnScreen, gameScreen);
   transitionAudio.play();
    if(mode == 'easy' && turnPlayer == computer){
+    gameScreen.style.pointerEvents = 'none'
     setTimeout(() => {
+      gameScreen.style.pointerEvents = 'all'
       computerMove();
     }, 300);
   }
   else if(mode == 'mid' && turnPlayer == computer){
+    gameScreen.style.pointerEvents = 'none'
     setTimeout(() => {
+      gameScreen.style.pointerEvents = 'all'
       computerMoveMid(squares);
     }, 300);
   }
   else if(mode == 'impossible' && turnPlayer == computer){
+    gameScreen.style.pointerEvents = 'none'
     setTimeout(() => {
+      gameScreen.style.pointerEvents = 'all'
       impossibleComputerMove(squares)
     }, 300);
   }
 });
 oSelect.addEventListener('click', () => {
-  player = 'O';
-  computer = 'X';
+  player = 'o';
+  computer = 'x';
   turnPlayerUndefined()
   transitionScreen(chooseTurnScreen, gameScreen);
   transitionAudio.play();
   if(mode == 'easy' && turnPlayer == computer){
+    gameScreen.style.pointerEvents = 'none'
     setTimeout(() => {
+      gameScreen.style.pointerEvents = 'all'
       computerMove();
     }, 300);
   }
   else if(mode == 'mid' && turnPlayer == computer){
+    gameScreen.style.pointerEvents = 'none'
     setTimeout(() => {
+      gameScreen.style.pointerEvents = 'all'
       computerMoveMid(squares);
     }, 300);
   }
   else if(mode == 'impossible' && turnPlayer == computer){
     setTimeout(() => {
+      gameScreen.style.pointerEvents = 'all'
       impossibleComputerMove(squares)
     }, 300);
   }
@@ -143,11 +154,11 @@ oSelect.addEventListener('click', () => {
 let remainer;
 
 xToggleSelect.addEventListener('click', function() {
-  selectStarterToggle(xToggleSelect, oToggleSelect, 'X');
+  selectStarterToggle(xToggleSelect, oToggleSelect, 'x');
 });
 
 oToggleSelect.addEventListener('click', () => {
-  selectStarterToggle(oToggleSelect, xToggleSelect, 'O');
+  selectStarterToggle(oToggleSelect, xToggleSelect, 'o');
 });
 
 
@@ -165,7 +176,7 @@ function selectStarterToggle(selected, other, n){
 }
 function turnPlayerUndefined(){
   if(turnPlayer == undefined){
-    turnPlayer = 'X';
+    turnPlayer = 'x';
   }
 }
 
@@ -209,7 +220,7 @@ squares.forEach((square, i) => { //creating the empty squares and making them cl
       gameField[i] = turnPlayer;
       square.textContent = turnPlayer;
       clickAudio.play()
-      turnPlayer = turnPlayer === 'X' ? 'O' : 'X';
+      turnPlayer = turnPlayer === 'x' ? 'o' : 'x';
       checkOutcome()
       }
       else{
@@ -219,7 +230,7 @@ squares.forEach((square, i) => { //creating the empty squares and making them cl
     }
   });
 });
-
+let gameEnded;
 function checkOutcome() { //checks the winning outcome
   const winningCombinations = [
     // horizontally
@@ -234,19 +245,20 @@ function checkOutcome() { //checks the winning outcome
     [0, 4, 8], 
     [2, 4, 6]              
   ];
-
   for (const combination of winningCombinations) {
     const [a, b, c] = combination;
     if (gameField[a] !== '' && gameField[a] === gameField[b] && gameField[b] === gameField[c]) {
       if (mode !== 'pvp') {
+        gameEnded = true;
         let winningSquares = [a, b, c];
           gameField[a] === player ? endScreenTransitions(winScreen, winAudio) : endScreenTransitions(loseScreen, loseAudio);
           highlightWinningSquares(winningSquares)
 
       } else{
         let winningSquares = [a, b, c];
-          gameField[a] === 'X' ? endScreenTransitions(xWinScreen, winAudio) : endScreenTransitions(oWinScreen, winAudio);
+          gameField[a] === 'x' ? endScreenTransitions(xWinScreen, winAudio) : endScreenTransitions(oWinScreen, winAudio);
           highlightWinningSquares(winningSquares)
+          
       }
      
       return true;
@@ -263,19 +275,23 @@ function checkOutcome() { //checks the winning outcome
   return false;
 }
 
-function makeMove(i) { //computer moves
+function makeMove(i) { //the part that handles movement for non pvp modes
+  if (gameEnded) return;
   gameField[i] = turnPlayer;
   squares[i].textContent = turnPlayer;
   clickAudio.play()
   squares[i].removeEventListener('click', makeMove); 
   turnPlayer = turnPlayer === player ? computer : player;
   checkOutcome()
+  if (gameEnded) return;
   if (turnPlayer === computer) {
     gameScreen.style.pointerEvents = 'none';
     setTimeout(() => {
       if (mode === 'easy') {
+        if (gameEnded) return;
         computerMove();
       } else if (mode === 'mid') {
+        if (gameEnded) return;
         computerMoveMid(squares);
       }
       else if(mode == 'impossible'){
@@ -294,6 +310,7 @@ function computerMove() { //easy difficulty logic
     return acc;
   }, []);
   let selectedIndex;
+  if (gameEnded) return;
   selectedIndex = Math.floor(Math.random() * emptyFields.length);
   const selectedField = emptyFields[selectedIndex];
   gameField[selectedField] = turnPlayer;
@@ -363,11 +380,32 @@ function endScreenTransitions(outcome, audio){
       outcome.style.opacity = "0";
       transitionScreen(outcome, chooseDifficultyScreen);
       muteButton.style.display = 'inline-block';
+      gameEnded = false;
     }, 3000);
-  }, 599);
+  }, 905);
  
 }
-
+function highlightWinningSquares(winningSquares) {
+  for (const selectedSquare of winningSquares) {
+    const squareElement = document.getElementById('square-' + selectedSquare);
+    squareElement.classList.add('winning-square');
+  }
+  setTimeout(() => {
+    for (const selectedSquare of winningSquares) {
+      const squareElement = document.getElementById('square-' + selectedSquare);
+      squareElement.classList.remove('winning-square');
+    }
+  }, 900)
+}
+function highlightAllSquares() {
+  const squares = document.querySelectorAll(".square");
+  squares.forEach((square) => {
+    square.style.animation = 'expand 0.8s ease forwards';
+    setTimeout(() => {
+      square.style.animation = 'none';
+    }, 900);
+  });
+}
 
 //maxdifficulty logic
 
@@ -483,24 +521,5 @@ function minimax(board, depth, maximizingPlayer) {
 // function getBoardFromSquares(squares) {
 //   return squares.map(square => square.textContent);
 // }
-function highlightWinningSquares(winningSquares) {
-  for (const selectedSquare of winningSquares) {
-    const squareElement = document.getElementById('square-' + selectedSquare);
-    squareElement.classList.add('winning-square');
-  }
-  setTimeout(() => {
-    for (const selectedSquare of winningSquares) {
-      const squareElement = document.getElementById('square-' + selectedSquare);
-      squareElement.classList.remove('winning-square');
-    }
-  }, 600)
-}
-function highlightAllSquares() {
-  const squares = document.querySelectorAll(".square");
-  squares.forEach((square) => {
-    square.style.animation = 'expand 0.6s ease-in forwards';
-    setTimeout(() => {
-      square.style.animation = 'none';
-    }, 600);
-  });
-}
+
+
