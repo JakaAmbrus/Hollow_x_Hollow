@@ -304,9 +304,6 @@ margin-bottom: 2.5vh;
     border-right: 3px solid var(--primary-color);
 }
 
-.winning-square{
-    animation: expand 0.8s ease forwards;
-  }
 /* end screens */
 
 .end-screens{
@@ -329,7 +326,7 @@ margin-bottom: 2.5vh;
     font-size: 6em;
 }
 
-/* opacity transitions */
+
 
 /* audio */
 

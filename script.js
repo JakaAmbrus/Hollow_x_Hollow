@@ -212,24 +212,62 @@ let turnPlayer;
 let player ;
 let computer ;
 let gameField = ['', '', '', '', '', '', '', '', ''];
+squares.forEach((square, i) => {
+  square.addEventListener('mouseenter', () => {
+    if (gameField[i] === '') {
+      square.style.color = 'transparent';
+      square.style.webkitTextStroke = '1px white';
+      square.style.textStroke = '1px white';
+      square.textContent = turnPlayer;
+      square.style.backgroundColor = 'transparent';
+    }
+  });
 
-squares.forEach((square, i) => { //creating the empty squares and making them clickable
+  square.addEventListener('mouseleave', () => {
+    if (gameField[i] === '') {
+      square.style.color = '#f1f4f8';
+      square.style.webkitTextStroke = '';
+      square.style.textStroke = '';
+      square.style.backgroundColor = '';
+      square.textContent = '';
+    }
+  });
+
   square.addEventListener('click', () => {
     if (gameField[i] === '') {
-      if(mode == 'pvp'){
-      gameField[i] = turnPlayer;
-      square.textContent = turnPlayer;
-      clickAudio.play()
-      turnPlayer = turnPlayer === 'x' ? 'o' : 'x';
-      checkOutcome()
+      square.style.color = '#f1f4f8';
+      square.style.webkitTextStroke = '';
+      square.style.textStroke = '';
+      square.style.backgroundColor = '';
+      if (mode == 'pvp') {
+        gameField[i] = turnPlayer;
+        square.textContent = turnPlayer;
+        clickAudio.play();
+        turnPlayer = turnPlayer === 'x' ? 'o' : 'x';
+        checkOutcome();
+      } else {
+        makeMove(i);
       }
-      else{
-        makeMove(i)
-      }
-      
     }
   });
 });
+// squares.forEach((square, i) => { //creating the empty squares and making them clickable
+//   square.addEventListener('click', () => {
+//     if (gameField[i] === '') {
+//       if(mode == 'pvp'){
+//       gameField[i] = turnPlayer;
+//       square.textContent = turnPlayer;
+//       clickAudio.play()
+//       turnPlayer = turnPlayer === 'x' ? 'o' : 'x';
+//       checkOutcome()
+//       }
+//       else{
+//         makeMove(i)
+//       }
+      
+//     }
+//   });
+// });
 let gameEnded;
 function checkOutcome() { //checks the winning outcome
   const winningCombinations = [
@@ -269,6 +307,7 @@ function checkOutcome() { //checks the winning outcome
   if (fullBoard) {
     endScreenTransitions(drawScreen, drawAudio);
     highlightAllSquares();
+    gameEnded = true;
     return 'tie';
   }
 
@@ -388,22 +427,34 @@ function endScreenTransitions(outcome, audio){
 function highlightWinningSquares(winningSquares) {
   for (const selectedSquare of winningSquares) {
     const squareElement = document.getElementById('square-' + selectedSquare);
-    squareElement.classList.add('winning-square');
+    squareElement.style.animation = 'expand 0.8s ease forwards';
+    squareElement.style.color = 'transparent';
+    squareElement.style.webkitTextStroke = '2px #f1f4f8';
+    squareElement.style.textStroke = '1px #f1f4f8';
   }
   setTimeout(() => {
     for (const selectedSquare of winningSquares) {
       const squareElement = document.getElementById('square-' + selectedSquare);
-      squareElement.classList.remove('winning-square');
+      squareElement.style.animation = 'none';
+      squareElement.style.color = '#f1f4f8';
+      squareElement.style.webkitTextStroke = '';
+      squareElement.style.textStroke = '';
     }
-  }, 900)
+  }, 910)
 }
 function highlightAllSquares() {
   const squares = document.querySelectorAll(".square");
   squares.forEach((square) => {
     square.style.animation = 'expand 0.8s ease forwards';
+    square.style.color = 'transparent';
+    square.style.webkitTextStroke = '1px #f1f4f8';
+    square.style.textStroke = '1px #f1f4f8';
     setTimeout(() => {
       square.style.animation = 'none';
-    }, 900);
+      square.style.color = '#f1f4f8';
+      square.style.webkitTextStroke = '';
+      square.style.textStroke = '';
+    }, 910);
   });
 }
 
