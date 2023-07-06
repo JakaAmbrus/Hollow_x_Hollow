@@ -32,6 +32,12 @@ const oWinScreen = document.getElementById("o-wins-screen");
 const winScreen = document.getElementById("win-screen");
 const loseScreen = document.getElementById("lose-screen");
 const drawScreen = document.getElementById("draw-screen");
+const bossScreen1 = document.getElementById("boss-screen-1");
+const bossScreen2 = document.getElementById("boss-screen-2");
+const bossScreen3 = document.getElementById("boss-screen-3");
+const happyEndScreen = document.getElementById("happy-end-screen");
+
+
 //audio
 let gameAudio = document.querySelectorAll('.game-audio');
 let muteButton = document.querySelector('.mute-png');
@@ -45,8 +51,12 @@ const winAudio = document.getElementById("win-audio");
 const loseAudio = document.getElementById("lose-audio");
 const drawAudio = document.getElementById("draw-audio");
 const clickAudio = document.getElementById("click-audio");
+const bossStartAudio = document.getElementById("boss-1-audio");
+const bossTransitionAudio = document.getElementById("boss-transition-audio");
+const bossBeatAudio = document.getElementById("boss-beat-audio");
 
 let mode; //to switch between difficulties
+let bossHealth; //to determine when you can beat the impossible boss
 //screen transition
 function transitionScreen(current, next)
 {
@@ -82,11 +92,16 @@ midBtn.addEventListener('click', function() {
 });
 impossibleBtn.addEventListener('click', function() {
   transitionScreen(chooseDifficultyScreen, chooseTurnScreen);
-  livesLeft3.style.display = 'flex';
-  
-  pvpAudio.play();
+  bossScreen1.style.display = 'flex';
+  chooseTurnScreen.style.opacity = "0";
+  bossStartAudio.play();
   muteButton.style.display = 'none';
   mode = 'impossible';
+  bossHealth = 2;
+  setTimeout(() => {
+    bossScreen1.style.display = 'none';
+    chooseTurnScreen.style.opacity = "1";
+  }, 2750)
 });
 pvpBtn.addEventListener('click', function() {
   transitionScreen(chooseDifficultyScreen, chooseTurnScreen);
@@ -106,21 +121,21 @@ xSelect.addEventListener('click', () => {
     setTimeout(() => {
       gameScreen.style.pointerEvents = 'all'
       computerMove();
-    }, 300);
+    }, 400);
   }
   else if(mode == 'mid' && turnPlayer == computer){
     gameScreen.style.pointerEvents = 'none'
     setTimeout(() => {
       gameScreen.style.pointerEvents = 'all'
       computerMoveMid(squares);
-    }, 300);
+    }, 400);
   }
   else if(mode == 'impossible' && turnPlayer == computer){
     gameScreen.style.pointerEvents = 'none'
     setTimeout(() => {
       gameScreen.style.pointerEvents = 'all'
-      computerMove();
-    }, 300);
+      computerMoveMax()
+    }, 400);
   }
 });
 oSelect.addEventListener('click', () => {
@@ -134,21 +149,21 @@ oSelect.addEventListener('click', () => {
     setTimeout(() => {
       gameScreen.style.pointerEvents = 'all'
       computerMove();
-    }, 300);
+    }, 400);
   }
   else if(mode == 'mid' && turnPlayer == computer){
     gameScreen.style.pointerEvents = 'none'
     setTimeout(() => {
       gameScreen.style.pointerEvents = 'all'
       computerMoveMid(squares);
-    }, 300);
+    }, 400);
   }
   else if(mode == 'impossible' && turnPlayer == computer){
     gameScreen.style.pointerEvents = 'none'
     setTimeout(() => {
       gameScreen.style.pointerEvents = 'all'
       computerMoveMax()
-    }, 300);
+    }, 400);
   }
 });
 
@@ -274,12 +289,23 @@ function checkOutcome() { //checks the winning outcome
     const [a, b, c] = combination;
     if (gameField[a] !== '' && gameField[a] === gameField[b] && gameField[b] === gameField[c]) {
       if (mode !== 'pvp') {
-        gameEnded = true;
-        let winningSquares = [a, b, c];
-          gameField[a] === player ? endScreenTransitions(winScreen, winAudio) : endScreenTransitions(loseScreen, loseAudio);
+        if(bossHealth == 0 && gameField[a] === player){
+          gameEnded = true;
+          let winningSquares = [a, b, c];
+          happyEndingTransition();
           setTimeout(() => {
             highlightWinningSquares(winningSquares)
-          },50);
+          },80);
+        }
+        else{
+          gameEnded = true;
+          let winningSquares = [a, b, c];
+            gameField[a] === player ? endScreenTransitions(winScreen, winAudio) : endScreenTransitions(loseScreen, loseAudio);
+            setTimeout(() => {
+              highlightWinningSquares(winningSquares)
+            },80);
+        }
+
 
       } else{
         let winningSquares = [a, b, c];
@@ -296,11 +322,30 @@ function checkOutcome() { //checks the winning outcome
 
   const fullBoard = gameField.every(square => square !== '');
   if (fullBoard) {
-    endScreenTransitions(drawScreen, drawAudio);
-    setTimeout(() => {
-      highlightAllSquares();
-    },80);
-    gameEnded = true;
+    if(mode == 'impossible'){
+      gameEnded = true;
+      if(bossHealth == 2){
+        bossHealth = 1;
+        bossBattleTransitions(bossScreen2);
+        setTimeout(() => {
+          highlightAllSquares();
+        },80);
+      }
+      else if(bossHealth == 1){
+        bossHealth = 0;
+        bossBattleTransitions(bossScreen3);
+        setTimeout(() => {
+          highlightAllSquares();
+        },80);
+      }
+    }
+    else{
+      endScreenTransitions(drawScreen, drawAudio);
+      setTimeout(() => {
+        highlightAllSquares();
+      },80);
+      gameEnded = true;
+    }
     return 'tie';
   }
 
@@ -520,10 +565,12 @@ function endScreenTransitions(outcome, audio){
       transitionScreen(outcome, chooseDifficultyScreen);
       muteButton.style.display = 'inline-block';
       gameEnded = false;
+      bossHealth = 2;
     }, 3000);
   }, 905);
  
 }
+//win, lose, draw highlight squares
 function highlightWinningSquares(winningSquares) {
   for (const selectedSquare of winningSquares) {
     const squareElement = document.getElementById('square-' + selectedSquare);
@@ -556,4 +603,47 @@ function highlightAllSquares() {
       square.style.textStroke = '';
     }, 910);
   });
+}
+
+
+
+
+
+function bossBattleTransitions(bossHealthScreen){
+  gameScreen.style.pointerEvents = 'none';
+  console.log(bossHealth)
+  setTimeout(() => {
+    bossTransitionAudio.play()
+    transitionScreen(gameScreen, bossHealthScreen);
+    gameScreen.style.pointerEvents = 'all';
+    clearBoard();
+    setTimeout(() => {
+      transitionScreen(bossHealthScreen, chooseTurnScreen);
+      gameEnded = false;
+      turnPlayer = remainer;
+      if(bossHealth === 0){
+        mode = 'easy';
+      }
+      else{
+        mode = 'impossible';
+      }
+    }, 4000);
+  }, 905);
+}
+function happyEndingTransition(){
+  gameScreen.style.pointerEvents = 'none';
+  setTimeout(() => {
+    bossBeatAudio.play()
+    transitionScreen(gameScreen, happyEndScreen);
+    setTimeout(() => {happyEndScreen.style.opacity = "1";}, 100)
+    gameScreen.style.pointerEvents = 'all';
+    clearBoard();
+    setTimeout(() => {
+      happyEndScreen.style.opacity = "0";
+      transitionScreen(happyEndScreen, chooseDifficultyScreen);
+      gameEnded = false;
+      bossHealth = 2;
+    }, 4000);
+  }, 905);
+ 
 }

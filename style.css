@@ -358,6 +358,9 @@ margin-bottom: 2.5vh;
     width: clamp(300px, 23vw, 25vw);
     height: clamp(300px, 23vw, 25vw);
 }
+#happy-end-screen{
+    opacity: 0;
+}
 
 
 
