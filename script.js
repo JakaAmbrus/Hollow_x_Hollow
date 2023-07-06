@@ -82,6 +82,8 @@ midBtn.addEventListener('click', function() {
 });
 impossibleBtn.addEventListener('click', function() {
   transitionScreen(chooseDifficultyScreen, chooseTurnScreen);
+  livesLeft3.style.display = 'flex';
+  
   pvpAudio.play();
   muteButton.style.display = 'none';
   mode = 'impossible';
