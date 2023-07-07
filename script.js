@@ -38,7 +38,6 @@ const bossScreen2 = document.getElementById("boss-screen-2");
 const bossScreen3 = document.getElementById("boss-screen-3");
 const happyEndScreen = document.getElementById("happy-end-screen");
 
-
 //audio
 let gameAudio = document.querySelectorAll('.game-audio');
 let muteButton = document.querySelector('.mute-png');
@@ -55,6 +54,9 @@ const clickAudio = document.getElementById("click-audio");
 const bossStartAudio = document.getElementById("boss-1-audio");
 const bossTransitionAudio = document.getElementById("boss-transition-audio");
 const bossBeatAudio = document.getElementById("boss-beat-audio");
+//color
+const rootStyles = getComputedStyle(document.documentElement);
+const primaryColor = rootStyles.getPropertyValue('--primary-color');
 
 let mode; //to switch between difficulties
 let bossHealth; //to determine when you can beat the impossible boss
@@ -248,7 +250,7 @@ squares.forEach((square, i) => {
 
   square.addEventListener('mouseleave', () => {
     if (gameField[i] === '') {
-      square.style.color = '#f1f4f8';
+      square.style.color = primaryColor;
       square.style.webkitTextStroke = '';
       square.style.textStroke = '';
       square.style.backgroundColor = '';
@@ -258,7 +260,7 @@ squares.forEach((square, i) => {
 
   square.addEventListener('click', () => {
     if (gameField[i] === '') {
-      square.style.color = '#f1f4f8';
+      square.style.color = primaryColor;
       square.style.webkitTextStroke = '';
       square.style.textStroke = '';
       square.style.backgroundColor = '';
@@ -581,14 +583,14 @@ function highlightWinningSquares(winningSquares) {
     const squareElement = document.getElementById('square-' + selectedSquare);
     squareElement.style.animation = 'expand 0.8s ease forwards';
     squareElement.style.color = 'rgb(18, 18, 18)';
-    squareElement.style.webkitTextStroke = '2px #f1f4f8';
-    squareElement.style.textStroke = '1px #f1f4f8';
+    squareElement.style.webkitTextStroke = '1px '+ primaryColor;
+    squareElement.style.textStroke = '1px '+ primaryColor;
   }
   setTimeout(() => {
     for (const selectedSquare of winningSquares) {
       const squareElement = document.getElementById('square-' + selectedSquare);
       squareElement.style.animation = 'none';
-      squareElement.style.color = '#f1f4f8';
+      squareElement.style.color = primaryColor;
       squareElement.style.webkitTextStroke = '';
       squareElement.style.textStroke = '';
     }
@@ -599,11 +601,11 @@ function highlightAllSquares() {
   squares.forEach((square) => {
     square.style.animation = 'expand 0.8s ease forwards';
     square.style.color = 'rgb(18, 18, 18)';
-    square.style.webkitTextStroke = '1px #f1f4f8';
-    square.style.textStroke = '1px #f1f4f8';
+    square.style.webkitTextStroke = '1px '+ primaryColor;
+    square.style.textStroke = '1px '+ primaryColor;
     setTimeout(() => {
       square.style.animation = 'none';
-      square.style.color = '#f1f4f8';
+      square.style.color = primaryColor;
       square.style.webkitTextStroke = '';
       square.style.textStroke = '';
     }, 910);

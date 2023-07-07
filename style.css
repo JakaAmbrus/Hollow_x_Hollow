@@ -1,5 +1,5 @@
 :root{
-    --primary-color: #f1f4f8;
+    --primary-color: #f1f4f8 !important;
   }
 @font-face {
     font-family: 'HollowFont';
@@ -50,7 +50,7 @@ body{
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #f1f4f8;
+    color: var(--primary-color);
     font-family: 'HollowFont', Arial, sans-serif;
     background-color: #d3d3d3;
 }
