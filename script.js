@@ -13,6 +13,7 @@ const xSelect = document.getElementById("x-select");
 const oSelect = document.getElementById("o-select");
 const xToggleSelect = document.getElementById("x-turn-button");
 const oToggleSelect = document.getElementById("o-turn-button");
+const bossDiffText = document.getElementById("boss-diff-text");
 //game screen
 const gameScreen = document.getElementById("game-screen");
 const pvpBtn = document.getElementById("pvp");
@@ -83,12 +84,14 @@ easyBtn.addEventListener('click', function() {
   pvpAudio.play();
   muteButton.style.display = 'none';
   mode = 'easy';
+  bossDiffText.textContent = ''
 });
 midBtn.addEventListener('click', function() {
   transitionScreen(chooseDifficultyScreen, chooseTurnScreen);
   pvpAudio.play();
   muteButton.style.display = 'none';
   mode = 'mid';
+  bossDiffText.textContent = ''
 });
 impossibleBtn.addEventListener('click', function() {
   transitionScreen(chooseDifficultyScreen, chooseTurnScreen);
@@ -98,6 +101,7 @@ impossibleBtn.addEventListener('click', function() {
   muteButton.style.display = 'none';
   mode = 'impossible';
   bossHealth = 2;
+  bossDiffText.textContent = 'IMPOSSIBLE TO WIN'
   setTimeout(() => {
     bossScreen1.style.display = 'none';
     chooseTurnScreen.style.opacity = "1";
@@ -108,6 +112,7 @@ pvpBtn.addEventListener('click', function() {
   pvpAudio.play();
   muteButton.style.display = 'none';
   mode = 'pvp';
+  bossDiffText.textContent = ''
 });
 //turn selection
 xSelect.addEventListener('click', () => {
@@ -611,7 +616,6 @@ function highlightAllSquares() {
 
 function bossBattleTransitions(bossHealthScreen){
   gameScreen.style.pointerEvents = 'none';
-  console.log(bossHealth)
   setTimeout(() => {
     bossTransitionAudio.play()
     transitionScreen(gameScreen, bossHealthScreen);
@@ -623,8 +627,10 @@ function bossBattleTransitions(bossHealthScreen){
       turnPlayer = remainer;
       if(bossHealth === 0){
         mode = 'easy';
+        bossDiffText.textContent = 'THE BOSS IS WEAK AND BEATABLE'
       }
       else{
+        bossDiffText.textContent = 'STILL IMPOSSIBLE TO WIN'
         mode = 'impossible';
       }
     }, 4000);
