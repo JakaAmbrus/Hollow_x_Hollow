@@ -285,11 +285,24 @@ margin-bottom: 2.5vh;
     border: 0.05em solid var(--primary-color);
     
 }
+@keyframes blinkText {
+    0% {
+      opacity: 1;
+    }
+    25% {
+      opacity: 0;
+    }
+    50%{
+        opacity: 1;
+    }
+  }
 #boss-diff-text{
     position: absolute;
-    top: 2%;
-    left: 2%;
+    top: 5%;
+    left: 5%;
     font-size: 0.5em;
+    animation: blinkText 1.5s infinite;
+    font-weight: bold;
 }
 
 /* game screen */
@@ -355,6 +368,8 @@ margin-bottom: 2.5vh;
 }
 #x-wins-screen > div, #o-wins-screen > div{
     font-size: 6em;
+    color: transparent;
+    -webkit-text-stroke: 2px var(--primary-color);
 }
 .end-boss-screens p {
     margin-bottom: 0;
