@@ -269,14 +269,6 @@ margin-bottom: 2.5vh;
 #turn-buttons{
     display: flex;
     height: 3em;
-    color: black;
-    background: none;
-}
-.background-btn{
-    background: var(--primary-color);
-}
-#turn-buttons > button{
-    
 }
 #x-turn-button, #o-turn-button{
     width: 50%;
