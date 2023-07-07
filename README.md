@@ -3,7 +3,7 @@ This is an implementation of the classic game "Tic Tac Toe" using HTML, CSS, and
 - **PVP:**  Player vs player where you place the slections for both parties
 - **Easy:** Computer makes random moves with no regard for where it places them
 - **Standard:** Computer check if there is a winning position after every move is made and tries to capitalise on it
-- **Impossible:** Computer is using the minmax algorithm to determine the best possible course of action making it impossible to win against it
+- **Impossible:** Computer is using the minmax algorithm to determine the best possible course of action making it impossible to win against it, I made a boss battle sequence that gives you the oppertunity to beat the boss if you draw 2 times against it in a row.
 
 ## Game Demo
 
